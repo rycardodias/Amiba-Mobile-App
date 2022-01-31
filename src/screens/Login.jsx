@@ -1,4 +1,3 @@
-import { sendRequest } from '../lib/requests/requests';
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image, TextInput, Button, ToastAndroid } from 'react-native';
 import { getUsers } from '../lib/requests/usersRequests';
@@ -21,21 +20,11 @@ export const Login = ({ navigation }) => {
             });
         }
 
-        // navigation.navigate('HOME')
+        // navigation.navigate('Home')
     }
 
     async function handlegetUsers() {
-        const cookie = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkYzkzYmMyLWQ3ZDQtNDFmZS1hNmIwLTNiMzZlYjNlY2U2MSIsInBlcm1pc3Npb24iOlsiQURNSU4iXSwiaWF0IjoxNjQzNTg3OTM0fQ.amPi-C7B_7bzAWryabmvxvFdLYn8lAR9iHUn-J4b3Yg"
-
-        const res = await fetch('https://shop.amiba.pt/api/users', {
-            headers: {
-                "Cookie": cookie
-            }
-        })
-        .then(res => res.json())
-        .then((res) => console.log(res))
-
-        console.log("users", res);
+        const res = await getUsers()
     }
     return (
         <View style={styles.container}>
@@ -60,7 +49,7 @@ export const Login = ({ navigation }) => {
 
             <Button
                 title="Users"
-                onPress={() => handlegetUsers()} />
+                onPress={() => navigation.navigate('Home')} />
             <Button
                 title="Sair"
                 onPress={() => logout()} />

@@ -2,6 +2,7 @@
 import { createContext, useEffect, useReducer } from "react";
 import { Text } from "react-native";
 import * as usersRequests from '../lib/requests/usersRequests'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
     isAuthenticated: false,
@@ -52,27 +53,36 @@ const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }) => {
+
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const login = async (email, password) => {
-        const response = await usersRequests.login(email, password)
-        if (response.error || response.data.error) {
+        try {
+            const response = await usersRequests.login(email, password)
+
+            if (response.data.error) return response
+
+            AsyncStorage.setItem('token', response.data.data)
+
+            const info = await usersRequests.getUserByToken()
+
+            dispatch({
+                type: "LOGIN",
+                payload: {
+                    user: info.data.data
+                }
+            });
+
             return response
+        } catch (error) {
+            console.error(error);
+
         }
-
-        const info = await usersRequests.getUserByToken()
-
-        dispatch({
-            type: "LOGIN",
-            payload: {
-                user: info.data.data
-            }
-        });
-        return response
     };
 
     const logout = async () => {
         await usersRequests.logout()
+        await AsyncStorage.removeItem('token')
         dispatch({
             type: "LOGOUT"
         });
@@ -82,7 +92,7 @@ export const AuthProvider = ({ children }) => {
         (async () => {
             try {
                 const validToken = await usersRequests.validateToken()
-                // console.log('validToken', validToken);
+                // console.log(validToken);
                 if (validToken.data.data) {
                     const response = await usersRequests.getUserByToken() //@ts-ignore
                     dispatch({
@@ -118,7 +128,6 @@ export const AuthProvider = ({ children }) => {
         // return <LoadingScreen />;
         return <Text>em espera</Text>
     }
-    // console.log("chegou", state);
     return <AuthContext.Provider value={{ ...state, method: "JWT", login, logout }}>
         {children}
     </AuthContext.Provider>;

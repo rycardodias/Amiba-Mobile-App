@@ -1,5 +1,4 @@
-import { sendRequest, sendRequest2 } from './requests'
-// import Cookies from 'js-cookie';
+import { sendRequest } from './requests'
 
 const getUsers = async () => {
     return await sendRequest('GET', 'users');
