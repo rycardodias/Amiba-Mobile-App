@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'
 import { HelperText, TextInput } from 'react-native-paper';
 import { useTranslation } from 'react-i18next'
 import * as Yup from "yup";
 import { Formik } from 'formik';
-// import DateTimePicker from '@react-native-community/datetimepicker';
+import { genders, races } from '../lib/values/types';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useIsFocused } from '@react-navigation/native';
 
 
 export const AddAnimal = () => {
     const { t } = useTranslation()
+    const isFocused = useIsFocused()
     const emptyObject = {
         identifier: "",
         ExplorationId: "",
         race: "",
         gender: "",
-        birthDate: "",
+        birthDate: "02-01-2022",
         weight: "",
         slaughterDate: "",
         slaughterWeight: "",
@@ -24,24 +28,26 @@ export const AddAnimal = () => {
         breeder: "",
     }
 
-    const [animal, setanimal] = useState(emptyObject);
-    // const [showDate, setshowDate] = useState(false);
+    // const [animal, setanimal] = useState(emptyObject);
+    // const [show, setshow] = useState(false);
+    // const [newDate, setnewDate] = useState(new Date());
+
 
     const fieldValidationSchema = Yup.object().shape({
         identifier: Yup.string().min(3, t("Too Short")).required(`${t('Identifier')} ${t('is required!')}`),
         race: Yup.string().required(`${t('Race')} ${t('is required!')}`),
-        ExplorationId: Yup.string().required(`${t('Exploration')} ${t('is required!')}`),
-        birthDate: Yup.date().required(`${t('Birth Date')} ${t('is required!')}`),
+        // ExplorationId: Yup.string().required(`${t('Exploration')} ${t('is required!')}`),
+        // birthDate: Yup.date().required(`${t('Birth Date')} ${t('is required!')}`),
         weight: Yup.string().required(`${t('Weight')} ${t('is required!')}`),
     });
 
-    async function handleAddAnimal() {
+    async function handleSubmit(values) {
         try {
-            const { identifier, race, birthDate, weight } = animal
+            const { identifier, race, gender, birthDate, weight } = values
 
             const ExplorationId = await AsyncStorage.getItem('ExplorationId')
+            if (!(identifier && race && ExplorationId && birthDate && weight)) {
 
-            if (!(identifier, race, ExplorationId, birthDate, weight)) {
                 return Toast.show({
                     type: 'error',
                     text1: 'Erro!',
@@ -49,15 +55,15 @@ export const AddAnimal = () => {
                 });
             }
 
-            let animalAux = { ...animal, ExplorationId: ExplorationId }
-
-            let newArray = []
+            const animalAux = { ...values, ExplorationId: ExplorationId }
 
             const existingData = await AsyncStorage.getItem('AnimalStorage')
 
             if (!existingData) {
                 await AsyncStorage.setItem('AnimalStorage', JSON.stringify([animalAux]))
             } else {
+                let newArray = []
+
                 const parsed = JSON.parse(existingData)
 
                 for (const element of parsed) {
@@ -72,7 +78,7 @@ export const AddAnimal = () => {
                 text1: 'Sucesso!',
                 text2: 'Registo adicionado com sucesso!'
             });
-            await setanimal(emptyObject)
+
         } catch (error) {
             console.error(error);
             Toast.show({
@@ -83,72 +89,56 @@ export const AddAnimal = () => {
         }
     }
 
-    async function handleList() {
-        const existingData = await AsyncStorage.getItem('AnimalStorage')
-        console.log("existingData", JSON.parse(existingData));
-    }
-
-    async function handleDelete() {
-        await AsyncStorage.removeItem('AnimalStorage')
-    }
-
-    // return <View style={styles.container}>
-    //     <Button
-    //         title='Eliminar Animal'
-    //         onPress={handleDelete} />
-    //     <Toast /> 
-
-    //     <Button
-    //         title='Listar Animal'
-    //         onPress={handleList} />
     return (
-        <Formik
-            style={styles.container}
-            validationSchema={fieldValidationSchema}
-            initialValues={emptyObject}
-            onSubmit={handleAddAnimal}
-        >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
-                <View>
-                    <TextInput style={styles.input} name="identifier" placeholder={t('Identifier')}
-                        onChangeText={handleChange('identifier')}
-                        onBlur={handleBlur('identifier')}
-                        value={values.identifier} />
-                    <HelperText type="error" visible={Boolean(errors.identifier && touched.identifier)}>{errors.identifier}</HelperText>
+        <>
+            <Formik
+                validationSchema={fieldValidationSchema}
+                initialValues={emptyObject}
+                onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }}
+            >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
 
-                    <TextInput style={styles.input} name="race" placeholder={t('Race')}
-                        onChangeText={handleChange('race')}
-                        onBlur={handleBlur('race')}
-                        value={values.race} />
-                    <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
+                    <View>
+                        <TextInput style={styles.input} name="identifier" placeholder={t('Identifier')}
+                            onChangeText={handleChange('identifier')}
+                            onBlur={handleBlur('identifier')}
+                            value={values.identifier} />
+                        <HelperText type="error" visible={Boolean(errors.identifier && touched.identifier)}>{errors.identifier}</HelperText>
 
-                    <TextInput style={styles.input} name="birthDate" placeholder={t('BirthDate')}
-                        type="date"
-                        onChangeText={handleChange('birthDate')}
-                        // onPress={setshowDate(true)}
-                        onBlur={handleBlur('birthDate')}
-                        value={values.birthDate} />
-                    <HelperText type="error" visible={Boolean(errors.birthDate && touched.birthDate)}>{errors.birthDate}</HelperText>
+                        <Picker name="race"
+                            selectedValue={values.race} value={values.race}
+                            onValueChange={handleChange('race')} onBlur={handleBlur('race')} >
+                            <Picker.Item key="" value="" label={t("Race")} />
+                            {races && races.map(item => {
+                                return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                            })}
+                        </Picker>
+                        <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
 
-                    {/* {showDate && <DateTimePicker 
-                        value={values.birthDate}
-                        display="calendar"
-                    />} */}
+                        <Picker name="gender"
+                            selectedValue={values.gender} value={values.gender}
+                            onValueChange={handleChange('gender')} onBlur={handleBlur('gender')} >
+                            <Picker.Item key="" value="" label={t("Gender")} />
+                            {genders && genders.map(item => {
+                                return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                            })}
+                        </Picker>
+                        <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
 
-                    <TextInput style={styles.input} name="weight" placeholder={t('Weight')}
-                        onChangeText={handleChange('weight')}
-                        onBlur={handleBlur('weight')}
-                        value={values.weight} />
-                    <HelperText type="error" visible={Boolean(errors.weight && touched.weight)}>{errors.weight}</HelperText>
+                        <TextInput style={styles.input} name="weight" placeholder={t('Weight')}
+                            onChangeText={handleChange('weight')}
+                            onBlur={handleBlur('weight')}
+                            value={values.weight} />
+                        <HelperText type="error" visible={Boolean(errors.weight && touched.weight)}>{errors.weight}</HelperText>
 
-
-                    <Button onPress={handleSubmit} title={t("Save")} disabled={!isValid} />
-                </View>
-            )}
-        </Formik>
+                        <Button onPress={handleSubmit} title={t("Save")} disabled={!isValid} />
+                    </View>
+                )
+                }
+            </Formik >
+            <Toast />
+        </>
     )
-
-    {/* </View>; */ }
 };
 
 const styles = StyleSheet.create({

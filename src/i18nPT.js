@@ -1,4 +1,5 @@
 const i18nPT = {
+    "Sync": "Sincronizar",
     "List": "Listagem",
     "Account Settings": "Configurações de Conta",
     "Password requirements:": "Requisitos palavra-passe:",
@@ -46,6 +47,7 @@ const i18nPT = {
     "Proceed to payment": "Proceder o pagamento",
     'Clear filter': 'Limpar Filtro',
     "Delete Selected": "Eliminar Seleção",
+    "Delete": "Eliminar",
     "Edit Selected": "Editar Seleção",
     "Selected": "Selecionado(s)",
     "Add new": 'Adicionar',
