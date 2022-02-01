@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'
+import { HelperText, TextInput } from 'react-native-paper';
+import { useTranslation } from 'react-i18next'
+import * as Yup from "yup";
+import { Formik } from 'formik';
+// import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 export const AddAnimal = () => {
+    const { t } = useTranslation()
     const emptyObject = {
         identifier: "",
         ExplorationId: "",
         race: "",
         gender: "",
         birthDate: "",
+        weight: "",
         slaughterDate: "",
         slaughterWeight: "",
         slaughterLocal: "",
@@ -17,10 +25,30 @@ export const AddAnimal = () => {
     }
 
     const [animal, setanimal] = useState(emptyObject);
+    // const [showDate, setshowDate] = useState(false);
+
+    const fieldValidationSchema = Yup.object().shape({
+        identifier: Yup.string().min(3, t("Too Short")).required(`${t('Identifier')} ${t('is required!')}`),
+        race: Yup.string().required(`${t('Race')} ${t('is required!')}`),
+        ExplorationId: Yup.string().required(`${t('Exploration')} ${t('is required!')}`),
+        birthDate: Yup.date().required(`${t('Birth Date')} ${t('is required!')}`),
+        weight: Yup.string().required(`${t('Weight')} ${t('is required!')}`),
+    });
 
     async function handleAddAnimal() {
         try {
+            const { identifier, race, birthDate, weight } = animal
+
             const ExplorationId = await AsyncStorage.getItem('ExplorationId')
+
+            if (!(identifier, race, ExplorationId, birthDate, weight)) {
+                return Toast.show({
+                    type: 'error',
+                    text1: 'Erro!',
+                    text2: 'Parametros em falta!'
+                });
+            }
+
             let animalAux = { ...animal, ExplorationId: ExplorationId }
 
             let newArray = []
@@ -64,32 +92,63 @@ export const AddAnimal = () => {
         await AsyncStorage.removeItem('AnimalStorage')
     }
 
-    return <View style={styles.container}>
-        <Text>Introduzir animal</Text>
-        <TextInput style={styles.input}
-            value={animal.identifier}
-            placeholder='Introduza o identificador'
-            onChangeText={text => setanimal({ ...animal, identifier: text })} />
-        <TextInput style={styles.input}
-            value={animal.race}
-            placeholder='Introduza a raça'
-            onChangeText={text => setanimal({ ...animal, race: text })} />
-        <TextInput style={styles.input}
-            value={animal.gender}
-            placeholder='Introduza o genero'
-            onChangeText={text => setanimal({ ...animal, gender: text })} />
-        <Button
-            title='Adicionar Animal'
-            onPress={handleAddAnimal} />
-        <Button
-            title='Listar Animal'
-            onPress={handleList} />
-        <Button
-            title='Listar Animal'
-            onPress={handleDelete} />
-        <Toast />
+    // return <View style={styles.container}>
+    //     <Button
+    //         title='Eliminar Animal'
+    //         onPress={handleDelete} />
+    //     <Toast /> 
 
-    </View>;
+    //     <Button
+    //         title='Listar Animal'
+    //         onPress={handleList} />
+    return (
+        <Formik
+            style={styles.container}
+            validationSchema={fieldValidationSchema}
+            initialValues={emptyObject}
+            onSubmit={handleAddAnimal}
+        >
+            {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
+                <View>
+                    <TextInput style={styles.input} name="identifier" placeholder={t('Identifier')}
+                        onChangeText={handleChange('identifier')}
+                        onBlur={handleBlur('identifier')}
+                        value={values.identifier} />
+                    <HelperText type="error" visible={Boolean(errors.identifier && touched.identifier)}>{errors.identifier}</HelperText>
+
+                    <TextInput style={styles.input} name="race" placeholder={t('Race')}
+                        onChangeText={handleChange('race')}
+                        onBlur={handleBlur('race')}
+                        value={values.race} />
+                    <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
+
+                    <TextInput style={styles.input} name="birthDate" placeholder={t('BirthDate')}
+                        type="date"
+                        onChangeText={handleChange('birthDate')}
+                        // onPress={setshowDate(true)}
+                        onBlur={handleBlur('birthDate')}
+                        value={values.birthDate} />
+                    <HelperText type="error" visible={Boolean(errors.birthDate && touched.birthDate)}>{errors.birthDate}</HelperText>
+
+                    {/* {showDate && <DateTimePicker 
+                        value={values.birthDate}
+                        display="calendar"
+                    />} */}
+
+                    <TextInput style={styles.input} name="weight" placeholder={t('Weight')}
+                        onChangeText={handleChange('weight')}
+                        onBlur={handleBlur('weight')}
+                        value={values.weight} />
+                    <HelperText type="error" visible={Boolean(errors.weight && touched.weight)}>{errors.weight}</HelperText>
+
+
+                    <Button onPress={handleSubmit} title={t("Save")} disabled={!isValid} />
+                </View>
+            )}
+        </Formik>
+    )
+
+    {/* </View>; */ }
 };
 
 const styles = StyleSheet.create({

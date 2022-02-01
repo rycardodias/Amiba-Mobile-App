@@ -1,5 +1,6 @@
 import React from 'react';
+import { View } from 'react-native';
 
 export const ListAnimal = () => {
-  return <div></div>;
+  return <View></View>;
 };
