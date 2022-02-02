@@ -9,6 +9,7 @@ import { getOrganizations } from '../lib/requests/organizationsRequests';
 import { getExplorations } from '../lib/requests/explorationsRequests';
 import { Picker } from '@react-native-picker/picker';
 import { useIsFocused } from '@react-navigation/native';
+import { Divider } from 'react-native-elements';
 
 export const SettingsScreen = () => {
   const { t } = useTranslation()
@@ -22,7 +23,7 @@ export const SettingsScreen = () => {
 
       await setexplorations(JSON.parse(explorations))
       await setorganizations(JSON.parse(organizations))
-      console.log("terminou");
+
     }
 
     if (isFocused) {
@@ -39,12 +40,24 @@ export const SettingsScreen = () => {
 
   async function handleGetData() {
     const organizations = await getOrganizations()
-    if (organizations.error || organizations.data.error) return
+    if (organizations.error || organizations.data.error) {
+      return Toast.show({
+        type: 'error',
+        text1: 'Erro!',
+        text2: `Erro ao procurar ${t("Organizations")}!`
+      });
+    }
     await setorganizations(organizations.data.data)
     await AsyncStorage.setItem("Organizations", JSON.stringify(organizations.data.data))
 
     const explorations = await getExplorations()
-    if (explorations.error || explorations.data.error) return
+    if (explorations.error || explorations.data.error) {
+      return Toast.show({
+        type: 'error',
+        text1: 'Erro!',
+        text2: `Erro ao procurar ${t("Explorations")}!`
+      });
+    }
     await setexplorations(explorations.data.data)
     await AsyncStorage.setItem("Explorations", JSON.stringify(explorations.data.data))
 
@@ -54,8 +67,6 @@ export const SettingsScreen = () => {
       text1: 'Sucesso!',
       text2: `Dados atualizados!`
     });
-
-    await AsyncStorage.setItem('ExplorationId', 'd8f72b54-1143-4654-b5c1-3cfde3863802')
   }
 
   async function handleChangeOrganization(value) {
@@ -84,8 +95,8 @@ export const SettingsScreen = () => {
       const { identifier, race, ExplorationId, gender, birthDate, weight } = element
 
       const res = await createAnimal(identifier, race, ExplorationId, gender, birthDate, weight)
-
-      if (res.error || res.data.error) {
+      console.log(res.error);
+      if (res.error || res.data) {
         Toast.show({
           type: 'error',
           text1: 'Erro!',
@@ -106,7 +117,12 @@ export const SettingsScreen = () => {
     });
   }
 
-  return <View >
+  return <View style={styles.container}>
+    <Button
+      title={`${t("Sync")} ${t("Organizations")}/${t("Explorations")}`}
+      onPress={handleGetData} />
+    <Divider width={10} color='#fff' />
+
     <Picker name="organizationId"
       selectedValue={organizationId} value={organizationId}
       onValueChange={handleChangeOrganization}
@@ -127,18 +143,16 @@ export const SettingsScreen = () => {
       })}
     </Picker>
 
-    <Button
-      title={`${t("Sync")} ${t("Explorations")}`}
-      onPress={handleGetData} />
-
+    <Divider width={50} color='#fff' />
 
     {/* <Text>Sincronização de dados</Text> */}
 
     <Button
-      title={t("Sync")}
+      title={`${t("Sync")} ${t("Animals")}`}
       onPress={handleSync} />
+    <Divider width={50} color='#fff' />
 
-    {/* <LoginComponent /> */}
+    <LoginComponent />
     <Toast />
   </View>;
 };
@@ -147,8 +161,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
-    padding: 30,
     justifyContent: 'center',
   },
 });

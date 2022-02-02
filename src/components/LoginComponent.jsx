@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image, TextInput, Button, ToastAndroid } from 'react-native';
+import { Divider } from 'react-native-elements';
 import Toast from 'react-native-toast-message'
 import useAuth from '../hooks/useAuth';
 
@@ -21,7 +22,7 @@ export const LoginComponent = ({ navigation }) => {
     }
 
     return (
-        <View>
+        <View >
             <TextInput
                 style={styles.input}
                 value={email}
@@ -42,6 +43,8 @@ export const LoginComponent = ({ navigation }) => {
             }}
                 title="Entrar"
                 onPress={handleLogin} />
+            
+            <Divider width={5} color='#fff' />
 
             <Button style={styles.button}
                 title="Sair"
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
     },
     logo: {
@@ -70,8 +73,9 @@ const styles = StyleSheet.create({
         padding: 10
     },
     button: {
-        borderWidth: 1,
-        margin: 10,
-        padding: 10
+        // borderWidth: 1,
+        // margin: 10,
+        // padding: 10
+
     }
 });

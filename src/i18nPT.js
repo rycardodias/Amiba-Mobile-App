@@ -1,4 +1,7 @@
 const i18nPT = {
+    "Male": "Macho",
+    "Female": "Femea",
+    "Gender": "Genero",
     "Sync": "Sincronizar",
     "List": "Listagem",
     "Account Settings": "Configurações de Conta",

@@ -3,13 +3,14 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'
-import { HelperText, TextInput } from 'react-native-paper';
+import { HelperText, TextInput, Title } from 'react-native-paper';
 import { useTranslation } from 'react-i18next'
 import * as Yup from "yup";
 import { Formik } from 'formik';
 import { genders, races } from '../lib/values/types';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useIsFocused } from '@react-navigation/native';
+import { Input, Icon } from 'react-native-elements';
 
 
 export const AddAnimal = () => {
@@ -28,17 +29,12 @@ export const AddAnimal = () => {
         breeder: "",
     }
 
-    // const [animal, setanimal] = useState(emptyObject);
-    // const [show, setshow] = useState(false);
-    // const [newDate, setnewDate] = useState(new Date());
-
-
     const fieldValidationSchema = Yup.object().shape({
         identifier: Yup.string().min(3, t("Too Short")).required(`${t('Identifier')} ${t('is required!')}`),
         race: Yup.string().required(`${t('Race')} ${t('is required!')}`),
         // ExplorationId: Yup.string().required(`${t('Exploration')} ${t('is required!')}`),
         // birthDate: Yup.date().required(`${t('Birth Date')} ${t('is required!')}`),
-        weight: Yup.string().required(`${t('Weight')} ${t('is required!')}`),
+        weight: Yup.number().required(`${t('Weight')} ${t('is required!')}`),
     });
 
     async function handleSubmit(values) {
@@ -90,54 +86,55 @@ export const AddAnimal = () => {
     }
 
     return (
-        <>
+        <View style={styles.container} >
+
             <Formik
                 validationSchema={fieldValidationSchema}
                 initialValues={emptyObject}
                 onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
-
-                    <View>
-                        <TextInput style={styles.input} name="identifier" placeholder={t('Identifier')}
+                    <View >
+                        <Input
+                            placeholder={t('Identifier')}
                             onChangeText={handleChange('identifier')}
                             onBlur={handleBlur('identifier')}
-                            value={values.identifier} />
-                        <HelperText type="error" visible={Boolean(errors.identifier && touched.identifier)}>{errors.identifier}</HelperText>
+                            value={values.identifier}
+                            errorMessage={Boolean(errors.identifier && touched.identifier) && errors.identifier}
+                        />
 
                         <Picker name="race"
                             selectedValue={values.race} value={values.race}
                             onValueChange={handleChange('race')} onBlur={handleBlur('race')} >
-                            <Picker.Item key="" value="" label={t("Race")} />
+                            <Picker.Item key="" value="" label={`${t("Select")} ${t("Race")}`} />
                             {races && races.map(item => {
                                 return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
                             })}
                         </Picker>
                         <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
-
+                        <Input
+                            placeholder={t('Weight')}
+                            onChangeText={handleChange('weight')}
+                            onBlur={handleBlur('weight')}
+                            value={values.weight}
+                            errorMessage={Boolean(errors.weight && touched.weight) && errors.weight}
+                        />
                         <Picker name="gender"
                             selectedValue={values.gender} value={values.gender}
                             onValueChange={handleChange('gender')} onBlur={handleBlur('gender')} >
-                            <Picker.Item key="" value="" label={t("Gender")} />
+                            <Picker.Item key="" value="" label={`${t("Select")} ${t("Gender")}`} />
                             {genders && genders.map(item => {
                                 return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
                             })}
                         </Picker>
                         <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
 
-                        <TextInput style={styles.input} name="weight" placeholder={t('Weight')}
-                            onChangeText={handleChange('weight')}
-                            onBlur={handleBlur('weight')}
-                            value={values.weight} />
-                        <HelperText type="error" visible={Boolean(errors.weight && touched.weight)}>{errors.weight}</HelperText>
-
                         <Button onPress={handleSubmit} title={t("Save")} disabled={!isValid} />
                     </View>
-                )
-                }
+                )}
             </Formik >
             <Toast />
-        </>
+        </View>
     )
 };
 
@@ -145,17 +142,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
     },
     logo: {
         width: 100,
         height: 100,
     },
-    input: {
-        height: 30,
-        margin: 10,
-        borderWidth: 1,
-        padding: 10
-    }
 });

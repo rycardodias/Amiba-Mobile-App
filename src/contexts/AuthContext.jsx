@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
         // return <LoadingScreen />;
         return <Text>em espera</Text>
     }
-    
+    console.log(state);
     return <AuthContext.Provider value={{ ...state, method: "JWT", login, logout }}>
         {children}
     </AuthContext.Provider>;
