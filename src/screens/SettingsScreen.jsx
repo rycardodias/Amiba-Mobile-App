@@ -118,6 +118,7 @@ export const SettingsScreen = () => {
   }
 
   return <View style={styles.container}>
+
     <Button
       title={`${t("Sync")} ${t("Organizations")}/${t("Explorations")}`}
       onPress={handleGetData} />
@@ -153,7 +154,8 @@ export const SettingsScreen = () => {
     <Divider width={50} color='#fff' />
 
     <LoginComponent />
-    <Toast />
+    <Toast style={{ zIndex: 10 }} />
+
   </View>;
 };
 

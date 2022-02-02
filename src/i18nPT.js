@@ -4,6 +4,7 @@ const i18nPT = {
     "Gender": "Genero",
     "Sync": "Sincronizar",
     "List": "Listagem",
+    "Login": "Entrar",
     "Account Settings": "Configurações de Conta",
     "Password requirements:": "Requisitos palavra-passe:",
     "Ensure that these requirements are met:": "Certifique-se que todos os requisitos são cumpridos",

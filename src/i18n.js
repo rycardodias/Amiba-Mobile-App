@@ -182,10 +182,6 @@ const resources = {
       "Zip Code": 'Zip Code',
       "VAT Number": 'VAT Number',
       User: 'User',
-
-
-
-
     }
   },
 

@@ -3,26 +3,74 @@ import { StyleSheet, View, Text, Image, TextInput, Button, ToastAndroid } from '
 import { Divider } from 'react-native-elements';
 import Toast from 'react-native-toast-message'
 import useAuth from '../hooks/useAuth';
+import { Formik } from 'formik';
+import { Input, Icon } from 'react-native-elements';
+import { useTranslation } from 'react-i18next';
+import * as Yup from "yup";
 
 export const LoginComponent = ({ navigation }) => {
-    const [email, setemail] = useState('ricardo@amiba.pt');
-    const [password, setpassword] = useState('Lol123!!');
+    const emptyObject = {
+        email: "",
+        password: "",
+    }
+    const { t } = useTranslation()
+    // const [email, setemail] = useState('ricardo@amiba.pt');
+    // const [password, setpassword] = useState('Lol123!!');
     const { login, logout } = useAuth()
 
-    async function handleLogin() {
-        const res = await login(email, password);
+    const fieldValidationSchema = Yup.object().shape({
+        email: Yup.string().email().required(`${t('Email')} ${t('is required!')}`),
+        password: Yup.string().required(`${t('Password')} ${t('is required!')}`),
+    });
+
+    async function handleSubmit(values) {
+        const res = await login(values.email, values.password);
         if (res.error || res.data.error) {
-            Toast.show({
+            return Toast.show({
                 type: 'error',
                 text1: 'Erro!',
                 text2: 'Email e/ou palavra-passe inválidos!'
             });
         }
 
+        return Toast.show({
+            type: 'success',
+            text1: 'Sucesso!',
+            text2: 'Login efetuado com sucesso!'
+        });
     }
 
     return (
         <View >
+            <Formik
+                validationSchema={fieldValidationSchema}
+                initialValues={emptyObject}
+                onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }}
+            >
+                {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
+                    <View >
+                        <Input
+                            placeholder={t('Email')}
+                            onChangeText={handleChange('email')}
+                            onBlur={handleBlur('email')}
+                            value={values.email}
+                            errorMessage={Boolean(errors.email && touched.email) && errors.email}
+                        />
+
+                        <Input
+                            secureTextEntry
+                            placeholder={t('Password')}
+                            onChangeText={handleChange('password')}
+                            onBlur={handleBlur('password')}
+                            value={values.password}
+                            errorMessage={Boolean(errors.v && touched.password) && errors.password}
+                        />
+
+                        <Button onPress={handleSubmit} title={t("Login")} disabled={!isValid} />
+                    </View>
+                )}
+            </Formik >
+            {/* 
             <TextInput
                 style={styles.input}
                 value={email}
@@ -42,8 +90,8 @@ export const LoginComponent = ({ navigation }) => {
                 backgroundColor: "red"
             }}
                 title="Entrar"
-                onPress={handleLogin} />
-            
+                onPress={handleLogin} /> */}
+
             <Divider width={5} color='#fff' />
 
             <Button style={styles.button}
