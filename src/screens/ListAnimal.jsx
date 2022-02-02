@@ -21,7 +21,7 @@ export const ListAnimal = () => {
   async function handleList() {
     await setloading(true)
     const existingData = await AsyncStorage.getItem('AnimalStorage')
-
+    
     await setanimalList(JSON.parse(existingData))
     await setloading(false)
   }

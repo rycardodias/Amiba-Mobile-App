@@ -90,13 +90,13 @@ export const SettingsScreen = () => {
   async function handleSync() {
     const animals = JSON.parse(await AsyncStorage.getItem('AnimalStorage'))
     let newArray = animals
-
+    console.log(animals,"animals");
     for (const element of animals) {
       const { identifier, race, ExplorationId, gender, birthDate, weight } = element
-
+      console.log("entra");
       const res = await createAnimal(identifier, race, ExplorationId, gender, birthDate, weight)
-      // console.log(res.error);
-      if (res.error || res.data) {
+      // console.log(res.data);
+      if (res.error || res.data.error) {
         Toast.show({
           type: 'error',
           text1: 'Erro!',
@@ -107,7 +107,7 @@ export const SettingsScreen = () => {
         newArray = await newArray.filter(item => item.identifier !== res.data.data.identifier)
       }
     }
-
+    // console.log(newArray);
     await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newArray))
 
     Toast.show({
@@ -144,17 +144,18 @@ export const SettingsScreen = () => {
       })}
     </Picker>
 
-    <Divider width={50} color='#fff' />
+    <Divider width={10} color='#fff' />
 
     {/* <Text>Sincronização de dados</Text> */}
 
     <Button
       title={`${t("Sync")} ${t("Animals")}`}
       onPress={handleSync} />
-    <Divider width={50} color='#fff' />
+
+    <Divider width={30} color='#fff' />
 
     <LoginComponent />
-    <Toast style={{ zIndex: 10 }} />
+    <Toast />
 
   </View>;
 };
