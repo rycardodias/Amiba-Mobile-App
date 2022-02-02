@@ -95,7 +95,7 @@ export const SettingsScreen = () => {
       const { identifier, race, ExplorationId, gender, birthDate, weight } = element
 
       const res = await createAnimal(identifier, race, ExplorationId, gender, birthDate, weight)
-      console.log(res.error);
+      // console.log(res.error);
       if (res.error || res.data) {
         Toast.show({
           type: 'error',
