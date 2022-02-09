@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'
@@ -8,12 +8,11 @@ import { useTranslation } from 'react-i18next'
 import * as Yup from "yup";
 import { Formik } from 'formik';
 import { genders, races } from '../lib/values/types';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useIsFocused } from '@react-navigation/native';
 import { Input, Icon } from 'react-native-elements';
+import { Divider } from 'react-native-elements';
 
-
-export const AddAnimal = () => {
+export const AddAnimal = (props) => {
     const { t } = useTranslation()
     const isFocused = useIsFocused()
     const emptyObject = {
@@ -29,6 +28,12 @@ export const AddAnimal = () => {
         breeder: "",
     }
 
+    const [organizations, setorganizations] = useState([]);
+    const [explorations, setexplorations] = useState([]);
+    const [organizationId, setorganizationId] = useState("");
+    const [explorationId, setexplorationId] = useState("");
+    const [explorationsFiltered, setexplorationsFiltered] = useState([]);
+
     const fieldValidationSchema = Yup.object().shape({
         identifier: Yup.string().min(3, t("Too Short")).required(`${t('Identifier')} ${t('is required!')}`),
         race: Yup.string().required(`${t('Race')} ${t('is required!')}`),
@@ -42,13 +47,9 @@ export const AddAnimal = () => {
             const { identifier, race, gender, birthDate, weight } = values
 
             const ExplorationId = await AsyncStorage.getItem('ExplorationId')
-            if (!(identifier && race && ExplorationId && birthDate && weight)) {
 
-                return Toast.show({
-                    type: 'error',
-                    text1: 'Erro!',
-                    text2: 'Parametros em falta!'
-                });
+            if (!(identifier && race && gender && ExplorationId && birthDate && weight)) {
+                return Toast.show({ type: 'error', text1: 'Erro!', text2: 'Parametros em falta!' });
             }
 
             const animalAux = { ...values, ExplorationId: ExplorationId }
@@ -59,7 +60,6 @@ export const AddAnimal = () => {
                 await AsyncStorage.setItem('AnimalStorage', JSON.stringify([animalAux]))
             } else {
                 let newArray = []
-
                 const parsed = JSON.parse(existingData)
 
                 for (const element of parsed) {
@@ -69,25 +69,84 @@ export const AddAnimal = () => {
 
                 await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newArray))
             }
-            Toast.show({
-                type: 'success',
-                text1: 'Sucesso!',
-                text2: 'Registo adicionado com sucesso!'
-            });
-
+            Toast.show({ type: 'success', text1: 'Sucesso!', text2: 'Registo adicionado com sucesso!' });
         } catch (error) {
-            console.error(error);
-            Toast.show({
-                type: 'error',
-                text1: 'Erro!',
-                text2: 'Erro ao adicionar registo!'
-            });
+            Toast.show({ type: 'error', text1: 'Erro!', text2: 'Erro ao adicionar registo!' });
         }
     }
 
+    // ### ORG EXPLORATIONS FUNCTIONS
+
+    async function getInitialData() {
+        const explorations = await AsyncStorage.getItem("Explorations")
+        const organizations = await AsyncStorage.getItem("Organizations")
+
+        await setexplorations(JSON.parse(explorations))
+        await setorganizations(JSON.parse(organizations))
+
+        const OrganizationId = await AsyncStorage.getItem("OrganizationId")
+        const ExplorationId = await AsyncStorage.getItem("ExplorationId")
+
+        await setorganizationId(OrganizationId)
+        await setexplorationId(ExplorationId)
+    }
+
+    useEffect(() => {
+        getInitialData()
+    }, [isFocused]);
+
+    async function handleChangeOrganization(value) {
+        await setorganizationId(value)
+        await AsyncStorage.setItem('OrganizationId', value)
+
+        let filtered = explorations
+
+        filtered = await filtered.filter(item => item.OrganizationId === value)
+
+        await setexplorationsFiltered(filtered)
+    }
+
+    async function handleChangeExploration(value) {
+        await setexplorationId(value)
+        await AsyncStorage.setItem('ExplorationId', value)
+    }
+
+    // ### TOASTS
+
+    function handleToast() {
+        const { type, text1, text2 } = props.toastObject
+        if (!(type && text1 && text2)) return console.log("teste")
+
+        Toast.show({
+            type: type,
+            text1: text1,
+            text2: text2
+        });
+    }
+
+    useEffect(() => {
+            handleToast()
+    }, [props.toastObject,])
+
     return (
         <View style={styles.container} >
+            {/* <Button
+                title="delete async"
+                onPress={() => AsyncStorage.clear()}
+            ></Button> */}
+            <Picker name="organizationId" selectedValue={organizationId} value={organizationId} onValueChange={handleChangeOrganization}            >
+                <Picker.Item key="" value="" label={t("Organization")} />
+                {organizations && organizations.map(item => {
+                    return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                })}
+            </Picker>
 
+            <Picker name="explorationId" selectedValue={explorationId} value={explorationId} onValueChange={handleChangeExploration}            >
+                <Picker.Item key="" value="" label={t("Exploration")} />
+                {explorationsFiltered && explorationsFiltered.map(item => {
+                    return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                })}
+            </Picker>
             <Formik
                 validationSchema={fieldValidationSchema}
                 initialValues={emptyObject}
@@ -103,15 +162,17 @@ export const AddAnimal = () => {
                             errorMessage={Boolean(errors.identifier && touched.identifier) && errors.identifier}
                         />
 
-                        <Picker name="race"
-                            selectedValue={values.race} value={values.race}
+                        <Picker name="race" selectedValue={values.race} value={values.race}
                             onValueChange={handleChange('race')} onBlur={handleBlur('race')} >
+
                             <Picker.Item key="" value="" label={`${t("Select")} ${t("Race")}`} />
+
                             {races && races.map(item => {
                                 return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
                             })}
                         </Picker>
                         <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
+
                         <Input
                             placeholder={t('Weight')}
                             onChangeText={handleChange('weight')}
@@ -119,6 +180,7 @@ export const AddAnimal = () => {
                             value={values.weight}
                             errorMessage={Boolean(errors.weight && touched.weight) && errors.weight}
                         />
+
                         <Picker name="gender"
                             selectedValue={values.gender} value={values.gender}
                             onValueChange={handleChange('gender')} onBlur={handleBlur('gender')} >
@@ -134,7 +196,7 @@ export const AddAnimal = () => {
                 )}
             </Formik >
             <Toast />
-        </View>
+        </View >
     )
 };
 

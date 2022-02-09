@@ -70,27 +70,6 @@ export const LoginComponent = ({ navigation }) => {
                     </View>
                 )}
             </Formik >
-            {/* 
-            <TextInput
-                style={styles.input}
-                value={email}
-                placeholder='Introduza o e-mail'
-                onChangeText={text => setemail(text)}
-            />
-            <TextInput
-                style={styles.input}
-                secureTextEntry
-                value={password}
-                placeholder='Introduza a palavra-passe'
-                onChangeText={text => setpassword(text)}
-            />
-
-            <Button style={{
-                margin: 10,
-                backgroundColor: "red"
-            }}
-                title="Entrar"
-                onPress={handleLogin} /> */}
 
             <Divider width={5} color='#fff' />
 

@@ -4,55 +4,75 @@ import { Login } from './src/screens/Login';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { AddAnimal } from './src/screens/AddAnimal';
 import { ListAnimal } from './src/screens/ListAnimal';
-import { SettingsScreen } from './src/screens/SettingsScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import "./src/i18n"
 import 'intl-pluralrules'
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { SyncOrganizationsExplorations } from './src/components/SyncOrganizationsExplorations';
+import { SyncAnimalsList } from './src/components/SyncAnimalsList';
+import { useState } from 'react';
+
+
 export default function App() {
   const { t } = useTranslation()
   const Tab = createBottomTabNavigator()
+  const [toastObject, settoastObject] = useState({ type: '', text1: '', text2: '' })
+  const [showToast, setshowToast] = useState(false)
+
+  async function handleToast(type, text1, text2) {
+    if (!(type && text1 && text2)) {
+      await setshowToast(false)
+      await settoastObject({ type: type, text1: text1, text2: text2 })
+    } else {
+      await settoastObject({ type: type, text1: text1, text2: text2 })
+      await setshowToast(true)
+    }
+  }
+
+
+  const ListAnimalComponent = props => <ListAnimal toastObject={toastObject} showToast={showToast} {...props} />;
+  const AddAnimalComponent = props => <AddAnimal toastObject={toastObject} showToast={showToast}   {...props} />;
+
 
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <NavigationContainer >
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName
+    <>
+      <SafeAreaProvider>
+        <AuthProvider>
+          <NavigationContainer >
+            <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName
+                  if (route.name === "AddAnimal") iconName = focused ? 'add-circle' : 'add-circle';
+                  else if (route.name === "ListAnimal") iconName = "list"
 
-                if (route.name === "Home") {
-                  iconName = 'home'
-                } else if (route.name === "Settings") {
-                  iconName = focused ? 'settings' : 'settings';
-                } else if (route.name === "AddAnimal") {
-                  iconName = focused ? 'add-circle' : 'add-circle';
-                } else if (route.name === "ListAnimal") {
-                  iconName = "list"
+                  return <Ionicons name={iconName} size={size} color={route.name === "Home" ? "gray" : color} />
                 }
+              })}>
 
-                return <Ionicons name={iconName} size={size} color={route.name === "Home" ? "gray" : color} />
+              {false ? <Tab.Screen name='Login' component={Login} />
+                :
+                <>
+                  <Tab.Screen name='AddAnimal' component={AddAnimalComponent} options={{
+                    title: t("Add"),
+                    headerRight: () => (<SyncOrganizationsExplorations handleToast={handleToast} />)
+                  }} />
+
+                  <Tab.Screen name='ListAnimal' component={ListAnimalComponent}
+                    options={{
+                      title: t("List"),
+                      headerRight: () => (<SyncAnimalsList handleToast={handleToast} />)
+                    }}
+                  />
+                </>
               }
-            })}>
-            {false ? <Tab.Screen name='Login' component={Login} />
-              :
-              <>
-                {/* <Tab.Screen name='Home' component={Home} options={{ title: t("Home") }} /> */}
-
-                <Tab.Screen name='AddAnimal' component={AddAnimal} options={{ title: t("Add") }} />
-
-                <Tab.Screen name='ListAnimal' component={ListAnimal} options={{ title: t("List") }} />
-                <Tab.Screen name='Settings' component={SettingsScreen} options={{ title: t("Settings") }} //listeners={{ tabPress: e => e.preventDefault() }} 
-                />
-              </>
-            }
-          </Tab.Navigator>
-        </NavigationContainer>
-      </AuthProvider >
-    </SafeAreaProvider>
+            </Tab.Navigator>
+          </NavigationContainer>
+        </AuthProvider >
+      </SafeAreaProvider>
+    </>
   );
 }
 
