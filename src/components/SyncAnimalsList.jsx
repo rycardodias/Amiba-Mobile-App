@@ -1,10 +1,26 @@
 import React from 'react'
 import { Icon } from 'react-native-elements/';
-import { Pressable } from 'react-native';
+import { Pressable, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createAnimal } from '../lib/requests/animalsRequests'
 
 export const SyncAnimalsList = (props) => {
+
+    async function syncBtnPress() {
+        Alert.alert(
+            "Atenção!",
+            "Deseja sincronizar todos os animais para a base de dados?",
+            [
+                {
+                    text: "Cancelar",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { text: "Sim", onPress: () => handleSyncAnimals() }
+            ]
+        );
+
+    }
 
     async function handleSyncAnimals() {
         try {
@@ -35,7 +51,7 @@ export const SyncAnimalsList = (props) => {
 
     return (
         <Pressable
-            onPress={() => handleSyncAnimals()}
+            onPress={() => syncBtnPress()}
             style={{ marginRight: 20, }}
         >
             <Icon name="cloud-upload"></Icon>

@@ -28,11 +28,11 @@ export const AddAnimal = (props) => {
         breeder: "",
     }
 
-    const [organizations, setorganizations] = useState([]);
+    // const [organizations, setorganizations] = useState([]);
     const [explorations, setexplorations] = useState([]);
-    const [organizationId, setorganizationId] = useState("");
+    // const [organizationId, setorganizationId] = useState("");
     const [explorationId, setexplorationId] = useState("");
-    const [explorationsFiltered, setexplorationsFiltered] = useState([]);
+    // const [explorationsFiltered, setexplorationsFiltered] = useState([]);
 
     const fieldValidationSchema = Yup.object().shape({
         identifier: Yup.string().min(3, t("Too Short")).required(`${t('Identifier')} ${t('is required!')}`),
@@ -79,15 +79,15 @@ export const AddAnimal = (props) => {
 
     async function getInitialData() {
         const explorations = await AsyncStorage.getItem("Explorations")
-        const organizations = await AsyncStorage.getItem("Organizations")
+        // const organizations = await AsyncStorage.getItem("Organizations")
 
         await setexplorations(JSON.parse(explorations))
-        await setorganizations(JSON.parse(organizations))
+        // await setorganizations(JSON.parse(organizations))
 
-        const OrganizationId = await AsyncStorage.getItem("OrganizationId")
+        // const OrganizationId = await AsyncStorage.getItem("OrganizationId")
         const ExplorationId = await AsyncStorage.getItem("ExplorationId")
 
-        await setorganizationId(OrganizationId)
+        // await setorganizationId(OrganizationId)
         await setexplorationId(ExplorationId)
     }
 
@@ -95,16 +95,16 @@ export const AddAnimal = (props) => {
         getInitialData()
     }, [isFocused]);
 
-    async function handleChangeOrganization(value) {
-        await setorganizationId(value)
-        await AsyncStorage.setItem('OrganizationId', value)
+    // async function handleChangeOrganization(value) {
+    //     await setorganizationId(value)
+    //     await AsyncStorage.setItem('OrganizationId', value)
 
-        let filtered = explorations
+    //     let filtered = explorations
 
-        filtered = await filtered.filter(item => item.OrganizationId === value)
+    //     filtered = await filtered.filter(item => item.OrganizationId === value)
 
-        await setexplorationsFiltered(filtered)
-    }
+    //     await setexplorationsFiltered(filtered)
+    // }
 
     async function handleChangeExploration(value) {
         await setexplorationId(value)
@@ -115,7 +115,7 @@ export const AddAnimal = (props) => {
 
     function handleToast() {
         const { type, text1, text2 } = props.toastObject
-        if (!(type && text1 && text2)) return console.log("teste")
+        if (!(type && text1 && text2)) return console.log("Toast invalid")
 
         Toast.show({
             type: type,
@@ -125,16 +125,13 @@ export const AddAnimal = (props) => {
     }
 
     useEffect(() => {
-            handleToast()
+        handleToast()
     }, [props.toastObject,])
 
     return (
         <View style={styles.container} >
-            {/* <Button
-                title="delete async"
-                onPress={() => AsyncStorage.clear()}
-            ></Button> */}
-            <Picker name="organizationId" selectedValue={organizationId} value={organizationId} onValueChange={handleChangeOrganization}            >
+            <Button title="Test" onPress={() => AsyncStorage.clear()}></Button>
+            {/* <Picker name="organizationId" selectedValue={organizationId} value={organizationId} onValueChange={handleChangeOrganization}            >
                 <Picker.Item key="" value="" label={t("Organization")} />
                 {organizations && organizations.map(item => {
                     return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
@@ -144,6 +141,13 @@ export const AddAnimal = (props) => {
             <Picker name="explorationId" selectedValue={explorationId} value={explorationId} onValueChange={handleChangeExploration}            >
                 <Picker.Item key="" value="" label={t("Exploration")} />
                 {explorationsFiltered && explorationsFiltered.map(item => {
+                    return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                })}
+            </Picker> */}
+
+            <Picker name="explorationId" selectedValue={explorationId} value={explorationId} onValueChange={handleChangeExploration}            >
+                <Picker.Item key="" value="" label={t("Exploration")} />
+                {explorations && explorations.map(item => {
                     return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
                 })}
             </Picker>
@@ -174,6 +178,7 @@ export const AddAnimal = (props) => {
                         <HelperText type="error" visible={Boolean(errors.race && touched.race)}>{errors.race}</HelperText>
 
                         <Input
+                            keyboardType='numeric'
                             placeholder={t('Weight')}
                             onChangeText={handleChange('weight')}
                             onBlur={handleBlur('weight')}

@@ -6,10 +6,12 @@ import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Divider } from 'react-native-elements';
 import Toast from 'react-native-toast-message'
+import { List } from 'react-native-paper';
 
 export const ListAnimal = (props) => {
   const { t } = useTranslation()
 
+  const [explorations, setexplorations] = useState([])
   const [animalList, setanimalList] = useState([]);
   const [loading, setloading] = useState(true);
 
@@ -17,22 +19,24 @@ export const ListAnimal = (props) => {
 
   useEffect(() => {
     if (isFocused) {
-        handleList()
-          .catch(error => console.log(error));
+      handleList()
+        .catch(error => console.log(error));
     }
   }, [isFocused]);
 
   async function handleList() {
     try {
       await setloading(true)
-      const existingData = await AsyncStorage.getItem('AnimalStorage')
+      const explorations = await AsyncStorage.getItem('Explorations')
+      await setexplorations(JSON.parse(explorations))
 
+      const existingData = await AsyncStorage.getItem('AnimalStorage')
       await setanimalList(JSON.parse(existingData))
+
       await setloading(false)
     } catch (error) {
       console.error(error)
     }
-
   }
 
   async function handleDeleteItem(identifier) {
@@ -43,9 +47,12 @@ export const ListAnimal = (props) => {
     await handleList()
   }
 
-  async function handleEditItem(identifier) {
-
+  // ### Explorations names
+  function getExplorationName(id) {
+    const filtered = explorations.filter(item => item.id === id)
+    return filtered[0].name
   }
+
   // ### TOASTS
 
   function handleToast() {
@@ -75,12 +82,12 @@ export const ListAnimal = (props) => {
               rightContent={
                 <Button title={t("Delete")} onPress={() => handleDeleteItem(l.identifier)} />
               }
-              leftContent={
-                <Button title={t("Edit")} onPress={() => handleEditItem(l.identifier)} />
-              }
+            // leftContent={
+            //   <Button title={t("Edit")} onPress={() => handleEditItem(l.identifier)} />
+            // }
             >
               <ListItem.Title>{l.identifier}</ListItem.Title>
-              <ListItem.Subtitle>{l.ExplorationId}</ListItem.Subtitle>
+              <ListItem.Subtitle>{`${getExplorationName(l.ExplorationId)}\nRaça: ${l.race} Genero: ${l.gender} Peso: ${l.weight}`}</ListItem.Subtitle>
             </ListItem.Swipeable>
           </ListItem>
         ))
