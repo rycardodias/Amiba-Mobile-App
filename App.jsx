@@ -12,34 +12,45 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SyncOrganizationsExplorations } from './src/components/SyncOrganizationsExplorations';
 import { SyncAnimalsList } from './src/components/SyncAnimalsList';
+import Toast from 'react-native-toast-message'
 import { useState } from 'react';
+import { Modal, StyleSheet, View, Text } from 'react-native';
 
 
 export default function App() {
   const { t } = useTranslation()
   const Tab = createBottomTabNavigator()
-  const [toastObject, settoastObject] = useState({ type: '', text1: '', text2: '' })
-  const [showToast, setshowToast] = useState(false)
 
-  async function handleToast(type, text1, text2) {
-    if (!(type && text1 && text2)) {
-      await setshowToast(false)
-      await settoastObject({ type: type, text1: text1, text2: text2 })
-    } else {
-      await settoastObject({ type: type, text1: text1, text2: text2 })
-      await setshowToast(true)
-    }
+  const [refreshList, setrefreshList] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
+
+  async function handleRefreshList() {
+    await setrefreshList(!refreshList)
   }
 
-
-  const ListAnimalComponent = props => <ListAnimal toastObject={toastObject} showToast={showToast} {...props} />;
-  const AddAnimalComponent = props => <AddAnimal toastObject={toastObject} showToast={showToast}   {...props} />;
-
+  const AnimalListComponents = props => <ListAnimal refresh={refreshList} />
 
   return (
     <>
       <SafeAreaProvider>
         <AuthProvider>
+          {/* <Modal
+            animationType="slide"
+            transparent={true}
+            visible={!modalVisible}
+            onPress={() => setModalVisible(!modalVisible)}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              setModalVisible(!modalVisible);
+
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text >Hello World!</Text>
+              </View>
+            </View>
+          </Modal> */}
           <NavigationContainer >
             <Tab.Navigator
               screenOptions={({ route }) => ({
@@ -55,15 +66,15 @@ export default function App() {
               {false ? <Tab.Screen name='Login' component={Login} />
                 :
                 <>
-                  <Tab.Screen name='AddAnimal' component={AddAnimalComponent} options={{
+                  <Tab.Screen name='AddAnimal' component={AddAnimal} options={{
                     title: t("Add"),
-                    headerRight: () => (<SyncOrganizationsExplorations handleToast={handleToast} />)
+                    headerRight: () => (<SyncOrganizationsExplorations />)
                   }} />
 
-                  <Tab.Screen name='ListAnimal' component={ListAnimalComponent}
+                  < Tab.Screen name='ListAnimal' component={AnimalListComponents}
                     options={{
                       title: t("List"),
-                      headerRight: () => (<SyncAnimalsList handleToast={handleToast} />)
+                      headerRight: () => (<SyncAnimalsList handleRefreshList={handleRefreshList} />)
                     }}
                   />
                 </>
@@ -71,8 +82,53 @@ export default function App() {
             </Tab.Navigator>
           </NavigationContainer>
         </AuthProvider >
+
       </SafeAreaProvider>
+      <Toast />
     </>
   );
 }
 
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
+});

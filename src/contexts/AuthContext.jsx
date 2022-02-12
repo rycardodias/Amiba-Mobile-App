@@ -92,7 +92,6 @@ export const AuthProvider = ({ children }) => {
         (async () => {
             try {
                 const validToken = await usersRequests.validateToken()
-                // console.log(validToken);
                 if (validToken.data.data) {
                     const response = await usersRequests.getUserByToken() //@ts-ignore
                     dispatch({
@@ -128,7 +127,7 @@ export const AuthProvider = ({ children }) => {
         // return <LoadingScreen />;
         return <Text>em espera</Text>
     }
-    // console.log(state);
+    console.log(state)
     return <AuthContext.Provider value={{ ...state, method: "JWT", login, logout }}>
         {children}
     </AuthContext.Provider>;

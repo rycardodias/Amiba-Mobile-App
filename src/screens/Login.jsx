@@ -54,7 +54,7 @@ export const Login = ({ navigation }) => {
                 title="Sair"
                 onPress={() => logout()} />
 
-            <Toast />
+            {/* <Toast /> */}
         </View>
     );
 };

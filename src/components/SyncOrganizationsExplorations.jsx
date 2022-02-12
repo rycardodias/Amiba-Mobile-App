@@ -1,32 +1,28 @@
 import React from 'react'
 import { Icon } from 'react-native-elements';
 import { Pressable, Alert } from 'react-native';
-import { getOrganizations } from '../lib/requests/organizationsRequests';
 import { getExplorations } from '../lib/requests/explorationsRequests';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message'
 
 export const SyncOrganizationsExplorations = (props) => {
+    const { t } = useTranslation()
 
-    async function syncOrganizationsExplorations() {
-        // const organizations = await getOrganizations()
-        // if (organizations.error || organizations.data.error) {
-        //     return await props.handleToast('error', 'Erro!', `Erro ao procurar ${t("Organizations")}!`)
-        // }
-
-        // await AsyncStorage.setItem("Organizations", JSON.stringify(organizations.data.data))
-
+    async function syncExplorations() {
         const explorations = await getExplorations()
-        if (explorations.error || explorations.data.error) {
-            return await props.handleToast('error', 'Erro!', `Erro ao procurar ${t("Explorations")}!`)
-        }
+
+        if (explorations.error || explorations.data.error)
+            return Toast.show({ type: 'error', text1: 'Erro!', text2: `Erro ao procurar ${t("Explorations")}!` });
+
         await AsyncStorage.setItem("Explorations", JSON.stringify(explorations.data.data))
 
-        return await props.handleToast('success', 'Sucesso!', `Dados atualizados!`)
+        return Toast.show({ type: 'success', text1: 'Sucesso!', text2: 'Dados atualizados!' });
     }
 
     return (
         <Pressable
-            onPress={syncOrganizationsExplorations}
+            onPress={syncExplorations}
             style={{ marginRight: 20, }}
         >
             <Icon name="sync"></Icon>

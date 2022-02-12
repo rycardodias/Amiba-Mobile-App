@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Button, Text, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ListItem, Avatar } from 'react-native-elements'
+import { ListItem } from 'react-native-elements'
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Divider } from 'react-native-elements';
-import Toast from 'react-native-toast-message'
-import { List } from 'react-native-paper';
+import { Modal, StyleSheet } from 'react-native';
 
 export const ListAnimal = (props) => {
   const { t } = useTranslation()
@@ -22,7 +20,7 @@ export const ListAnimal = (props) => {
       handleList()
         .catch(error => console.log(error));
     }
-  }, [isFocused]);
+  }, [isFocused, props.refresh]);
 
   async function handleList() {
     try {
@@ -53,26 +51,23 @@ export const ListAnimal = (props) => {
     return filtered[0].name
   }
 
-  // ### TOASTS
-
-  function handleToast() {
-    const { type, text1, text2 } = props.toastObject
-    if (!(type && text1 && text2)) return
-
-    Toast.show({
-      type: type,
-      text1: text1,
-      text2: text2
-    });
-  }
-
-  useEffect(() => {
-    handleToast()
-  }, [props.toastObject])
-
-
 
   return <View style={{ height: '100%' }}>
+    {/* <Modal
+      animationType="slide"
+      transparent={true}
+      visible={true}
+      onRequestClose={() => {
+        Alert.alert("Modal has been closed.");
+
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Text >Hello World!</Text>
+        </View>
+      </View>
+    </Modal> */}
     <ScrollView >
       {!loading && animalList &&
         animalList.map((l, i) => (
@@ -93,6 +88,51 @@ export const ListAnimal = (props) => {
         ))
       }
     </ScrollView >
-    <Toast />
+    {/* <Toast /> */}
+
   </View>
 };
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
+});

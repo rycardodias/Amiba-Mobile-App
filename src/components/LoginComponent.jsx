@@ -77,7 +77,7 @@ export const LoginComponent = ({ navigation }) => {
                 title="Sair"
                 onPress={() => logout()} />
 
-            <Toast />
+            {/* <Toast /> */}
         </View>
     );
 };
