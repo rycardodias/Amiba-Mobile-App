@@ -12,8 +12,8 @@ export const LoginModal = (props) => {
     const { login, logout } = useAuth()
 
     const emptyObject = {
-        email: "ricardo@amiba.pt",
-        password: "Lol123!!",
+        email: "",
+        password: "",
     }
 
     const fieldValidationSchema = Yup.object().shape({
@@ -37,10 +37,10 @@ export const LoginModal = (props) => {
                 animationType="slide"
                 transparent={true}
                 visible={props.visible}
-                // onRequestClose={() => {
-                //     Alert.alert("Modal has been closed.");
-                //     props.showModal()
-                // }}
+            // onRequestClose={() => {
+            //     Alert.alert("Modal has been closed.");
+            //     props.showModal()
+            // }}
             >
                 <View style={styles.centeredView}>
                     <TouchableOpacity onPress={() => props.showModal()}>
@@ -61,6 +61,7 @@ export const LoginModal = (props) => {
                                             <Text style={styles.text}>{t("Email")}</Text>
                                             <Input
                                                 style={styles.input}
+                                                keyboardType="email-address"
                                                 placeholder={t('Email')}
                                                 onChangeText={handleChange('email')}
                                                 onBlur={handleBlur('email')}
@@ -70,6 +71,7 @@ export const LoginModal = (props) => {
                                             <Text style={styles.text}>{t("Password")}</Text>
                                             <Input
                                                 placeholder={t('Password')}
+                                                secureTextEntry
                                                 onChangeText={handleChange('password')}
                                                 onBlur={handleBlur('password')}
                                                 value={values.password}

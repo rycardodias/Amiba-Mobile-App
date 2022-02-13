@@ -85,7 +85,8 @@ export const AddAnimal = (props) => {
     }
 
     useEffect(() => {
-        getInitialData()
+        if (isFocused)
+            getInitialData()
     }, [isFocused]);
 
     async function handleChangeExploration(value) {

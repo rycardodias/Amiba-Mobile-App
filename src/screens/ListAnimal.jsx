@@ -15,11 +15,19 @@ export const ListAnimal = (props) => {
 
   const isFocused = useIsFocused()
 
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     handleList()
+  //       .catch(error => console.log(error));
+  //   }
+  // }, [isFocused, props.refresh]);
+
   useEffect(() => {
-    if (isFocused) {
+    let x = true
+    if (isFocused)
       handleList()
-        .catch(error => console.log(error));
-    }
+
+    return () => { x = false }
   }, [isFocused, props.refresh]);
 
   async function handleList() {

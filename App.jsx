@@ -26,6 +26,7 @@ export default function App() {
   const [loggedIn, setloggedIn] = useState(false)
 
   async function handleRefreshList() {
+
     await setrefreshList(!refreshList)
   }
 
@@ -59,7 +60,7 @@ export default function App() {
 
               <Tab.Screen name='AddAnimal' component={AddAnimal} options={{
                 title: t("Add"),
-                headerRight: () => (<SyncOrganizationsExplorations showModal={handleShowModal} modalVisible={modalVisible} loggedIn={loggedIn}/>)
+                headerRight: () => (<SyncOrganizationsExplorations showModal={handleShowModal} modalVisible={modalVisible} loggedIn={loggedIn} />)
               }} />
 
               < Tab.Screen name='ListAnimal' component={AnimalListComponents}

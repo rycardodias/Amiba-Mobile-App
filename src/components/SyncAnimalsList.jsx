@@ -7,15 +7,14 @@ import Toast from 'react-native-toast-message'
 import useAuth from '../hooks/useAuth';
 
 export const SyncAnimalsList = (props) => {
-    const { login, logout } = useAuth()
-
-    async function handleLogin() {
-        let email, password = ''
-
-        const loginRequest = await login(email, password)
-    }
+    const { login, isLoggedIn } = useAuth()
 
     async function syncBtnPress() {
+        const result = await isLoggedIn()
+
+        if (!result.user) 
+            return await props.showModal()
+
         const animals = await JSON.parse(await AsyncStorage.getItem('AnimalStorage'))
 
         if (!animals) return Toast.show({ type: 'error', text1: 'Erro!', text2: 'Não existem dados para submeter!' });
@@ -29,11 +28,8 @@ export const SyncAnimalsList = (props) => {
                     style: "cancel"
                 },
                 {
-                    text: "Sim", onPress: () => {
-                        
-                        handleLogin()
-                        handleSyncAnimals(animals)
-                    }
+                    text: "Sim", onPress: () => handleSyncAnimals(animals)
+
                 }
             ]
         );
@@ -60,7 +56,7 @@ export const SyncAnimalsList = (props) => {
             }
             await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newArray))
 
-            props.handleRefreshList()
+            await props.handleRefreshList()
 
             return Toast.show({ type: 'success', text1: 'Sucesso!', text2: 'Sincronização completa!' });
         } catch (error) {
