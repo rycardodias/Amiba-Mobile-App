@@ -3,6 +3,7 @@ import { createContext, useEffect, useReducer } from "react";
 import { Text } from "react-native";
 import * as usersRequests from '../lib/requests/usersRequests'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message'
 
 const initialState = {
     isAuthenticated: false,
@@ -50,11 +51,16 @@ const AuthContext = createContext({
     ...initialState, method: "JWT",
     login: (email, password) => Promise.resolve(),
     logout: () => { },
+    isLoggedIn: () => Promise.resolve(),
 });
 
 export const AuthProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(reducer, initialState);
+
+    const isLoggedIn = async () => {
+        return await state || "vazio"
+    }
 
     const login = async (email, password) => {
         try {
@@ -83,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         await usersRequests.logout()
         await AsyncStorage.removeItem('token')
+        await Toast.show({ type: 'success', text1: 'Sucesso!', text2: 'Conta desligada com sucesso!' });
         dispatch({
             type: "LOGOUT"
         });
@@ -127,8 +134,8 @@ export const AuthProvider = ({ children }) => {
         // return <LoadingScreen />;
         return <Text>em espera</Text>
     }
-    console.log(state)
-    return <AuthContext.Provider value={{ ...state, method: "JWT", login, logout }}>
+
+    return <AuthContext.Provider value={{ ...state, method: "JWT", login, logout, isLoggedIn }}>
         {children}
     </AuthContext.Provider>;
 };

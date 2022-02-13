@@ -3,7 +3,6 @@ import { Button, StyleSheet, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message'
-import { HelperText } from 'react-native-paper';
 import { useTranslation } from 'react-i18next'
 import * as Yup from "yup";
 import { Formik } from 'formik';
@@ -11,7 +10,6 @@ import { genders, races } from '../lib/values/types';
 import { useIsFocused } from '@react-navigation/native';
 import { Input, Icon, Text, Image } from 'react-native-elements';
 import { Divider } from 'react-native-elements';
-import useAuth from '../hooks/useAuth'
 
 export const AddAnimal = (props) => {
     const { t } = useTranslation()
@@ -94,12 +92,9 @@ export const AddAnimal = (props) => {
         await setexplorationId(value)
         await AsyncStorage.setItem('ExplorationId', value)
     }
-    const { logout } = useAuth()
 
     return (
         <View style={styles.container} >
-            <Button title="Logout" onPress={logout}></Button>
-
             <Text style={styles.text}>{t("Exploration")}</Text>
             <Picker
                 style={styles.picker}
