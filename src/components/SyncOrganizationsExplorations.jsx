@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Icon } from 'react-native-elements';
 import { Pressable, Alert, View } from 'react-native';
-import { getExplorations } from '../lib/requests/explorationsRequests';
+import { getExplorations,getExplorationUserId } from '../lib/requests/explorationsRequests';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message'
@@ -39,7 +39,7 @@ export const SyncOrganizationsExplorations = (props) => {
         if (!result.user) {
             return await props.showModal()
         } else {
-            const explorations = await getExplorations()
+            const explorations = await getExplorationUserId()
 
             if (explorations.error || explorations.data.error)
                 return Toast.show({ type: 'error', text1: 'Erro!', text2: `Erro ao procurar ${t("Explorations")}!` });

@@ -1,5 +1,4 @@
 
-const cookie = "express:sess=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJkYzkzYmMyLWQ3ZDQtNDFmZS1hNmIwLTNiMzZlYjNlY2U2MSIsInBlcm1pc3Npb24iOlsiQURNSU4iXSwiaWF0IjoxNjQzNTg3OTM0fQ.amPi-C7B_7bzAWryabmvxvFdLYn8lAR9iHUn-J4b3Yg"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const sendRequest = async (metodh, url, params) => {

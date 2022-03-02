@@ -9,6 +9,7 @@ import "./src/i18n"
 import 'intl-pluralrules'
 import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NativeBaseProvider, Box } from "native-base";
 
 import { SyncOrganizationsExplorations } from './src/components/SyncOrganizationsExplorations';
 import { SyncAnimalsList } from './src/components/SyncAnimalsList';
@@ -42,38 +43,40 @@ export default function App() {
 
   return (
     <>
-      <SafeAreaProvider>
-        <AuthProvider>
-          <LoginModal visible={modalVisible} showModal={handleShowModal} loggedIn={handleloggedIn} />
+      <NativeBaseProvider>
+        <SafeAreaProvider>
+          <AuthProvider>
+            <LoginModal visible={modalVisible} showModal={handleShowModal} loggedIn={handleloggedIn} />
 
-          <NavigationContainer>
-            <Tab.Navigator
-              screenOptions={({ route }) => ({
-                tabBarIcon: ({ focused, color, size }) => {
-                  let iconName
-                  if (route.name === "AddAnimal") iconName = focused ? 'add-circle' : 'add-circle';
-                  else if (route.name === "ListAnimal") iconName = "list"
+            <NavigationContainer>
+              <Tab.Navigator
+                screenOptions={({ route }) => ({
+                  tabBarIcon: ({ focused, color, size }) => {
+                    let iconName
+                    if (route.name === "AddAnimal") iconName = focused ? 'add-circle' : 'add-circle';
+                    else if (route.name === "ListAnimal") iconName = "list"
 
-                  return <Ionicons name={iconName} size={size} color={route.name === "Home" ? "gray" : color} />
-                }
-              })}>
+                    return <Ionicons name={iconName} size={size} color={route.name === "Home" ? "gray" : color} />
+                  }
+                })}>
 
-              <Tab.Screen name='AddAnimal' component={AddAnimal} options={{
-                title: t("Add"),
-                headerRight: () => (<SyncOrganizationsExplorations showModal={handleShowModal} modalVisible={modalVisible} loggedIn={loggedIn} />)
-              }} />
+                <Tab.Screen name='AddAnimal' component={AddAnimal} options={{
+                  title: t("Add"),
+                  headerRight: () => (<SyncOrganizationsExplorations showModal={handleShowModal} modalVisible={modalVisible} loggedIn={loggedIn} />)
+                }} />
 
-              < Tab.Screen name='ListAnimal' component={AnimalListComponents}
-                options={{
-                  title: t("List"),
-                  headerRight: () => (<SyncAnimalsList showModal={handleShowModal} handleRefreshList={handleRefreshList} />)
-                }}
-              />
-            </Tab.Navigator>
-          </NavigationContainer>
-        </AuthProvider >
+                < Tab.Screen name='ListAnimal' component={AnimalListComponents}
+                  options={{
+                    title: t("List"),
+                    headerRight: () => (<SyncAnimalsList showModal={handleShowModal} handleRefreshList={handleRefreshList} />)
+                  }}
+                />
+              </Tab.Navigator>
+            </NavigationContainer>
+          </AuthProvider >
 
-      </SafeAreaProvider>
+        </SafeAreaProvider>
+      </NativeBaseProvider>
       <Toast />
     </>
   );

@@ -8,8 +8,9 @@ import * as Yup from "yup";
 import { Formik } from 'formik';
 import { genders, races } from '../lib/values/types';
 import { useIsFocused } from '@react-navigation/native';
-import { Input, Icon, Text, Image } from 'react-native-elements';
-import { Divider } from 'react-native-elements';
+
+// import { Divider } from 'react-native-elements';
+import { CheckIcon, Select, Input, FormControl, Box, Text, Divider } from "native-base";
 
 export const AddAnimal = (props) => {
     const { t } = useTranslation()
@@ -95,102 +96,86 @@ export const AddAnimal = (props) => {
     }
 
     return (
-        <View style={styles.container} >
-            <Text style={styles.text}>{t("Exploration")}</Text>
-            <Picker
-                style={styles.picker}
-                name="explorationId"
-                selectedValue={explorationId}
-                value={explorationId} onValueChange={handleChangeExploration}            >
-                <Picker.Item key="" value="" label={t("Exploration")} />
+        <Box alignItems="center" backgroundColor='#fff'>
+            <Text bold mt={3} mb={2}>{t("Exploration")}</Text>
+            <Select selectedValue={explorationId} minWidth="200"
+                accessibilityLabel={t("Exploration")} placeholder={t("Exploration")}
+                onValueChange={handleChangeExploration}
+                _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }} >
                 {explorations && explorations.map(item => {
-                    return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                    return <Select.Item label={t(item.name)} key={item.id} value={item.id} />
                 })}
-            </Picker>
-            <Divider width={50} color='#fff' />
+            </Select>
 
+            <Divider my="8" thickness="1" />
 
-            <Formik
-                validationSchema={fieldValidationSchema}
-                initialValues={emptyObject}
-                onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }}
-            >
+            <Formik validationSchema={fieldValidationSchema} initialValues={emptyObject}
+                onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }} >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
                     <View >
-                        <Text style={styles.text}>{t("Identifier")}</Text>
-                        <Input
+                        <Text bold mb={2}>{t("Identifier")}</Text>
+                        <Input mb={4}
+                            label={t('Identifier')}
                             placeholder={t('Identifier')}
-                            onChangeText={handleChange('identifier')}
-                            onBlur={handleBlur('identifier')}
+                            onChangeText={handleChange('identifier')} onBlur={handleBlur('identifier')}
                             value={values.identifier}
                             errorMessage={Boolean(errors.identifier && touched.identifier) && errors.identifier}
                         />
-                        <Text style={styles.text}>{t("Weight")}</Text>
-                        <Input
+                        <Text bold mb={2}>{t("Weight")}</Text>
+
+                        <Input mb={4}
                             keyboardType='numeric'
+                            label={t('Weight')}
                             placeholder={t('Weight')}
                             onChangeText={handleChange('weight')}
                             onBlur={handleBlur('weight')}
                             value={values.weight}
                             errorMessage={Boolean(errors.weight && touched.weight) && errors.weight}
                         />
-
-                        <Text style={styles.text}>{t("Gender")}</Text>
-                        <Picker
-                            style={styles.picker}
-                            name="gender"
-                            selectedValue={values.gender} value={values.gender}
-                            onValueChange={handleChange('gender')} onBlur={handleBlur('gender')} >
-                            <Picker.Item key="" value="" label={`${t("Select")} ${t("Gender")}`} />
+                        <Text bold mb={2}>{t("Gender")}</Text>
+                        <Select mb={2} selectedValue={values.gender} minWidth="200"
+                            accessibilityLabel={t("Gender")} placeholder={t("Gender")}
+                            onValueChange={handleChange('gender')} onBlur={handleBlur('gender')}
+                            _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }}  >
                             {genders && genders.map(item => {
-                                return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                                return <Select.Item label={t(item.name)} key={item.id} value={item.id} />
                             })}
-                        </Picker>
-                        {/* {Boolean(errors.gender && touched.gender) &&
-                            <HelperText type="error" visible={Boolean(errors.gender && touched.gender)}>{errors.gender}</HelperText>
-                        } */}
-                        <Text style={styles.text}>{t("Race")}</Text>
-                        <Picker
-                            style={styles.picker}
-                            name="race"
-                            selectedValue={values.race} value={values.race}
-                            onValueChange={handleChange('race')} onBlur={handleBlur('race')} >
-                            <Picker.Item key="" value="" label={`${t("Select")} ${t("Race")}`} />
+                        </Select>
+
+                        <Text bold mb={2}>{t("Race")}</Text>
+                        <Select mb={3} selectedValue={values.race} minWidth="200"
+                            accessibilityLabel={t("Race")} placeholder={t("Race")}
+                            onValueChange={handleChange('race')} onBlur={handleBlur('race')}
+                            _selectedItem={{
+                                bg: "teal.600",
+                                endIcon: <CheckIcon size="5" />
+                            }}  >
                             {races && races.map(item => {
-                                return <Picker.Item key={item.id} value={item.id} label={t(item.name)} />
+                                return <Select.Item label={t(item.name)} key={item.id} value={item.id} />
                             })}
-                        </Picker>
-
-
-
+                        </Select>
                         <Button onPress={handleSubmit} title={t("Save")} disabled={!isValid} />
                     </View>
                 )}
             </Formik >
-        </View >
+        </Box >
     )
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        // alignItems: 'center',
-        justifyContent: 'center',
-        // padding: 10,
-
-    },
-    logo: {
-        width: 100,
-        height: 100
-    },
-    text: {
-        fontSize: 18,
-        paddingStart: 10,
-        fontWeight: 'bold',
-    },
-    picker: {
+    select: {
+        // width: 300,
+        // minWidth:300,
+        // marginVertical: 10,
+        // width: 300,
         padding: 20,
-        margin: 10,
+    },
+    input: {
+        // width: 300,
+        // minWidth:300,
+        // marginVertical: 10,
+        // width: 300,
+        padding: 20,
+        margin: 20
     }
 });
