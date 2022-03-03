@@ -47,7 +47,6 @@ export const SyncAnimalsList = (props) => {
             for (const element of animals) {
                 const { identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight } = element
                 const res = await createAnimal(identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight)
-                console.log(res)
                 if (res.error || res.data.error) return Toast.show({ type: 'error', text1: 'Erro!', text2: `Erro ao inserir o animal ${identifier}!` });
 
                 newArray = await newArray.filter(item => item.identifier !== res.data.data.identifier)
@@ -55,7 +54,7 @@ export const SyncAnimalsList = (props) => {
             }
             await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newArray))
 
-            await props.handleRefreshList()
+            props.handleRefreshList()
 
             return Toast.show({ type: 'success', text1: 'Sucesso!', text2: 'Sincronização completa!' });
         } catch (error) {

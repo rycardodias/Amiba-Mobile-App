@@ -17,7 +17,6 @@ const sendRequest = async (metodh, url, params) => {
     body: JSON.stringify(params),
   };
 
-
   const response = await fetch((SERVER_URL + url), requestMetadata)
     .then((res) => res.json())
     .then(
