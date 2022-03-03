@@ -20,12 +20,14 @@ export const AddAnimal = (props) => {
         ExplorationId: "",
         race: "",
         gender: "",
-        birthDate: "02-01-2022",
+        birthDate: "12-12-2015",
         weight: "",
         slaughterDate: "",
         slaughterWeight: "",
         slaughterLocal: "",
         breeder: "",
+        lgn: "",
+        lga: "",
     }
 
     const [explorations, setexplorations] = useState([]);
@@ -96,8 +98,8 @@ export const AddAnimal = (props) => {
     }
 
     return (
-        <Box alignItems="center" backgroundColor='#fff'>
-            <Text bold mt={3} mb={2}>{t("Exploration")}</Text>
+        <Box alignItems="center" backgroundColor='#fff' height="100%" >
+            <Text bold mt={2} mb={2}>{t("Exploration")}</Text>
             <Select selectedValue={explorationId} minWidth="200"
                 accessibilityLabel={t("Exploration")} placeholder={t("Exploration")}
                 onValueChange={handleChangeExploration}
@@ -107,23 +109,43 @@ export const AddAnimal = (props) => {
                 })}
             </Select>
 
-            <Divider my="8" thickness="1" />
+            <Divider my="4" thickness="1" />
 
             <Formik validationSchema={fieldValidationSchema} initialValues={emptyObject}
+
                 onSubmit={(values, { resetForm }) => { handleSubmit(values); resetForm() }} >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched }) => (
                     <View >
-                        <Text bold mb={2}>{t("Identifier")}</Text>
-                        <Input mb={4}
+                        <Text bold mb={1}>{t("Identifier")}</Text>
+                        <Input mb={2}
                             label={t('Identifier')}
                             placeholder={t('Identifier')}
                             onChangeText={handleChange('identifier')} onBlur={handleBlur('identifier')}
                             value={values.identifier}
                             errorMessage={Boolean(errors.identifier && touched.identifier) && errors.identifier}
                         />
-                        <Text bold mb={2}>{t("Weight")}</Text>
 
-                        <Input mb={4}
+                        <Text bold mb={1}>{t("LGN")}</Text>
+                        <Input mb={2}
+                            label={t('LGN')}
+                            placeholder={t('LGN')}
+                            onChangeText={handleChange('lgn')} onBlur={handleBlur('lgn')}
+                            value={values.lgn}
+                            errorMessage={Boolean(errors.lgn && touched.lgn) && errors.lgn}
+                        />
+
+                        <Text bold mb={1}>{t("LGA")}</Text>
+                        <Input mb={2}
+                            label={t('LGA')}
+                            placeholder={t('LGA')}
+                            onChangeText={handleChange('lga')} onBlur={handleBlur('lga')}
+                            value={values.lga}
+                            errorMessage={Boolean(errors.lga && touched.lga) && errors.lga}
+                        />
+
+
+                        <Text bold mb={1}>{t("Weight")}</Text>
+                        <Input mb={2}
                             keyboardType='numeric'
                             label={t('Weight')}
                             placeholder={t('Weight')}
@@ -132,18 +154,22 @@ export const AddAnimal = (props) => {
                             value={values.weight}
                             errorMessage={Boolean(errors.weight && touched.weight) && errors.weight}
                         />
-                        <Text bold mb={2}>{t("Gender")}</Text>
-                        <Select mb={2} selectedValue={values.gender} minWidth="200"
+
+                        <Text bold mb={1}>{t("Gender")}</Text>
+                        <Select mb={1} selectedValue={values.gender} minWidth="200"
                             accessibilityLabel={t("Gender")} placeholder={t("Gender")}
                             onValueChange={handleChange('gender')} onBlur={handleBlur('gender')}
-                            _selectedItem={{ bg: "teal.600", endIcon: <CheckIcon size="5" /> }}  >
+                            _selectedItem={{
+                                bg: "teal.600",
+                                endIcon: <CheckIcon size="5" />
+                            }}  >
                             {genders && genders.map(item => {
                                 return <Select.Item label={t(item.name)} key={item.id} value={item.id} />
                             })}
                         </Select>
 
-                        <Text bold mb={2}>{t("Race")}</Text>
-                        <Select mb={3} selectedValue={values.race} minWidth="200"
+                        <Text bold mb={1}>{t("Race")}</Text>
+                        <Select mb={2} selectedValue={values.race} minWidth="200"
                             accessibilityLabel={t("Race")} placeholder={t("Race")}
                             onValueChange={handleChange('race')} onBlur={handleBlur('race')}
                             _selectedItem={{

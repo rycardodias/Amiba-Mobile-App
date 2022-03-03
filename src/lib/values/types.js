@@ -5,9 +5,10 @@
 // ]
 
 const races = [
-    { id: 'PRETA', name: 'Raça Preta' },
+    { id: 'PRETA', name: 'Preta Lusitânica ' },
     { id: 'BRANCA', name: 'Raça Branca' },
-    { id: 'AMARELA', name: 'Raça Amarela' },
+    { id: 'AMARELA', name: 'Amarela' },
+    { id: 'PEDRES', name: 'Pedrês Portuguesa' },
 ]
 
 const productTypes = [
@@ -27,7 +28,8 @@ const genders = [
 
 const ordersHistoryTypes = [
     { id: "PROCESSING", name: "Processing" },
-    { id: "SENT", name: "Sent" }
+    { id: "SENT", name: "Sent" },
+    { id: "CANCELED", name: "Canceled" }
 ]
 
 export { races, productTypes, explorationTypes, genders, ordersHistoryTypes }

@@ -12,8 +12,8 @@ const getAnimalsExplorationIdCertificated = async (ExplorationId) => {
     return await sendRequest('GET', 'animals/ExplorationId/' + ExplorationId + '/certificated');
 }
 
-const createAnimal = async (identifier, race, ExplorationId, gender, birthDate, weight) => {
-    return await sendRequest('POST', 'animals/create', { identifier, race, ExplorationId, gender, birthDate, weight })
+const createAnimal = async (identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight) => {
+    return await sendRequest('POST', 'animals/create', { identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight })
 };
 
 const updateAnimal = async (id, slaughterDate, slaughterWeight, slaughterLocal, breeder) => {

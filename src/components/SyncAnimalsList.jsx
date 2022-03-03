@@ -12,7 +12,7 @@ export const SyncAnimalsList = (props) => {
     async function syncBtnPress() {
         const result = await isLoggedIn()
 
-        if (!result.user) 
+        if (!result.user)
             return await props.showModal()
 
         const animals = await JSON.parse(await AsyncStorage.getItem('AnimalStorage'))
@@ -45,10 +45,9 @@ export const SyncAnimalsList = (props) => {
             if (!animals[0]) return Toast.show({ type: 'error', text1: 'Erro!', text2: 'Não existem dados para submeter!' });
 
             for (const element of animals) {
-                const { identifier, race, ExplorationId, gender, birthDate, weight } = element
-
-                const res = await createAnimal(identifier, race, ExplorationId, gender, birthDate, weight)
-
+                const { identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight } = element
+                const res = await createAnimal(identifier, race, ExplorationId, lgn, lga, gender, birthDate, weight)
+                console.log(res)
                 if (res.error || res.data.error) return Toast.show({ type: 'error', text1: 'Erro!', text2: `Erro ao inserir o animal ${identifier}!` });
 
                 newArray = await newArray.filter(item => item.identifier !== res.data.data.identifier)

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Text, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ListItem } from 'react-native-elements'
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { Modal, StyleSheet } from 'react-native';
+import { Modal, StyleSheet, Alert } from 'react-native';
+import { FlatList, Text, Box, HStack, VStack, Spacer, View, Pressable } from 'native-base';
+import { genders, races } from '../lib/values/types';
 
 export const ListAnimal = (props) => {
   const { t } = useTranslation()
@@ -14,13 +15,6 @@ export const ListAnimal = (props) => {
   const [loading, setloading] = useState(true);
 
   const isFocused = useIsFocused()
-
-  // useEffect(() => {
-  //   if (isFocused) {
-  //     handleList()
-  //       .catch(error => console.log(error));
-  //   }
-  // }, [isFocused, props.refresh]);
 
   useEffect(() => {
     let x = true
@@ -46,11 +40,29 @@ export const ListAnimal = (props) => {
   }
 
   async function handleDeleteItem(identifier) {
-    let newList = animalList
-    newList = await newList.filter(item => item.identifier !== identifier)
+    Alert.alert(
+      "Atenção!",
+      "Deseja eliminar o animal " + identifier + " ?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Sim",
+          onPress: async () => {
+            await setloading(true)
+            let newList = animalList
+            newList = await newList.filter(item => item.identifier !== identifier)
 
-    await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newList))
-    await handleList()
+            await AsyncStorage.setItem('AnimalStorage', JSON.stringify(newList))
+            await handleList()
+            await setloading(false)
+          }
+        }
+      ]
+    );
+
   }
 
   // ### Explorations names
@@ -60,43 +72,37 @@ export const ListAnimal = (props) => {
   }
 
 
-  return <View style={{ height: '100%' }}>
-    {/* <Modal
-      animationType="slide"
-      transparent={true}
-      visible={true}
-      onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
+  return <View style={{ height: '100%' }} >
+    <FlatList data={animalList} renderItem={
+      ({ item }) =>
+        <Pressable onLongPress={() => handleDeleteItem(item.identifier)}>
+          <Box key={item.identifier} style={{backgroundColor: '#fff'}}
+           borderBottomWidth="1" _dark={{ borderColor: "gray.600" }} borderColor="coolGray.200" pl="4" pr="5" py="2">
+            <HStack space={3} justifyContent="space-between">
+              {/* <Avatar size="48px" source={{ uri: item.avatarUrl }} /> */}
+              <VStack>
+                <Text _dark={{ color: "warmGray.50" }} color="coolGray.800" bold>
+                  {item.identifier}
+                </Text>
+                <Text color="coolGray.600" _dark={{ color: "warmGray.200" }}>
+                  {getExplorationName(item.ExplorationId)}
+                </Text>
+              </VStack>
+              <Spacer />
+              <VStack>
+                <Text fontSize="xs" _dark={{ color: "warmGray.50" }} color="coolGray.800" alignSelf="flex-end">
+                  {t(races.find(i => i.id === item.race).name)}
+                </Text>
+                <Text fontSize="xs" _dark={{ color: "warmGray.50" }} color="coolGray.800" alignSelf="flex-end">
+                  {`[ ${item.weight} g ]  ${t(genders.find(i => i.id === item.gender).name)}`}
+                </Text>
+              </VStack>
 
-      }}
-    >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text >Hello World!</Text>
-        </View>
-      </View>
-    </Modal> */}
-    <ScrollView >
-      {!loading && animalList &&
-        animalList.map((l, i) => (
-          <ListItem key={i} bottomDivider topDivider>
-            {/* <Avatar source={{ uri: l.avatar_url }} /> */}
-            <ListItem.Swipeable
-              rightContent={
-                <Button title={t("Delete")} onPress={() => handleDeleteItem(l.identifier)} />
-              }
-            // leftContent={
-            //   <Button title={t("Edit")} onPress={() => handleEditItem(l.identifier)} />
-            // }
-            >
-              <ListItem.Title>{l.identifier}</ListItem.Title>
-              <ListItem.Subtitle>{`${getExplorationName(l.ExplorationId)}\nRaça: ${l.race} Genero: ${l.gender} Peso: ${l.weight}`}</ListItem.Subtitle>
-            </ListItem.Swipeable>
-          </ListItem>
-        ))
-      }
-    </ScrollView >
-    {/* <Toast /> */}
+            </HStack>
+          </Box>
+        </Pressable>
+    } keyExtractor={item => item.id} />
+
 
   </View>
 };
